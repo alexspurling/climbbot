@@ -1,1 +1,1 @@
-worker:python climbbot.py
+worker: python climbbot.py
