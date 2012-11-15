@@ -1,3 +1,5 @@
+import re
+
 yos={
     '5.1':'1',
     '5.2':'2',
@@ -58,8 +60,7 @@ french={
     '6a+':'5.10b',
     '6b':'5.10c',
     '6b+':'5.10d',
-    '6c':'5.11a',
-    '6c':'5.11b',
+    '6c':'5.11a/b',
     '6c+':'5.11c',
     '7a':'5.11d',
     '7a+':'5.12a',
@@ -130,7 +131,24 @@ font={
     '8C+':'V16'
 }
 
-def is_grade(grade):
+yos_grade = re.compile('5\.[1-9]([0-5][abcd]?)?$')
+french_grade = re.compile('([1-3]|[4-5][abcABC]?[+]?|[6-9]([abcABC][+]?)?)$')
+font_grade = re.compile('([4-5][abcABC]?[+]?|[6-8]([abcABC][+]?)?)$')
+v_grade = re.compile('[vV][bB0-9][0-9]?[+]?$')
+
+def contains_yos_grade(grade):
+    return bool(yos_grade.match(grade))
+
+def contains_french_grade(grade):
+    return bool(french_grade.match(grade))
+
+def contains_font_grade(grade):
+    return bool(font_grade.match(grade))
+
+def contains_v_grade(grade):
+    return bool(v_grade.match(grade))
+
+def contains_grade(grade):
     lower_case_grade = grade.lower().replace('f', '')
     upper_case_grade = grade.upper()
     return lower_case_grade in yos or \

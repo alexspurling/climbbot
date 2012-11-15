@@ -11,7 +11,7 @@ class ClimbBot(bot.SimpleBot):
         if msg.startswith("~") or msg.startswith("!"):
             msg_text = msg[1:].strip()
             try:
-                if gradeconvert.is_grade(msg_text):
+                if gradeconvert.contains_grade(msg_text):
                     self.send_message(event.target, gradeconvert.convert(msg_text))
                 else:
                     self.send_message(event.target, "I don't understand: " + msg_text)
