@@ -26,7 +26,7 @@ if __name__ == "__main__":
     climbbot.real_name = "climbbot"
 
     # Let's connect to the host
-    climbbot.connect("irc.snoonet.com", channel="#bottest")
+    climbbot.connect("irc.snoonet.com", channel="#climbing")
 
     # Start running the bot
     climbbot.start()
