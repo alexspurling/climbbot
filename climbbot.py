@@ -9,7 +9,7 @@ class ClimbBot(bot.SimpleBot):
     def on_channel_message(self, event):
         msg = str(event.message)
         if msg.startswith("~") or msg.startswith("!"):
-            msg_text = msg[1:]
+            msg_text = msg[1:].strip()
             try:
                 if gradeconvert.is_grade(msg_text):
                     self.send_message(event.target, gradeconvert.convert(msg_text))
