@@ -8,7 +8,7 @@ class ClimbBot(bot.SimpleBot):
 
     def on_channel_message(self, event):
         msg = str(event.message)
-        if msg.startswith("~") or msg.startswith("!"):
+        if msg.startswith("~") or msg.startswith("!") or msg.startswith(self.nickname):
             msg_text = msg[1:].strip()
             try:
                 if gradeconvert.contains_grade(msg_text):
