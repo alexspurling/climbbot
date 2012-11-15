@@ -131,43 +131,53 @@ font={
     '8C+':'V16'
 }
 
-yos_grade = re.compile('5\.[1-9]([0-5][abcd]?)?$')
-french_grade = re.compile('([1-3]|[4-5][abcABC]?[+]?|[6-9]([abcABC][+]?)?)$')
-font_grade = re.compile('([4-5][abcABC]?[+]?|[6-8]([abcABC][+]?)?)$')
-v_grade = re.compile('[vV][bB0-9][0-9]?[+]?$')
+yos_grade = re.compile('(5\.[1-9]([0-5][abcd]?)?)')
+french_grade = re.compile('([1-3]|[4-5][abcABC]?[+]?|[6-9]([abcABC][+]?)?)')
+font_grade = re.compile('([4-5][abcABC]?[+]?|[6-8]([abcABC][+]?)?)')
+v_grade = re.compile('([vV][bB0-9][0-9]?[+]?)')
 
-def contains_yos_grade(grade):
-    return bool(yos_grade.match(grade))
+def get_yos_grade(grade):
+    match = yos_grade.match(grade)
+    if match:
+        return match.group(1)
+    return None
 
-def contains_french_grade(grade):
-    return bool(french_grade.match(grade))
+def get_french_grade(grade):
+    match = french_grade.match(grade)
+    if match:
+        return match.group(1)
+    return None
 
-def contains_font_grade(grade):
-    return bool(font_grade.match(grade))
+def get_font_grade(grade):
+    match = font_grade.match(grade)
+    if match:
+        return match.group(1)
+    return None
 
-def contains_v_grade(grade):
-    return bool(v_grade.match(grade))
+def get_v_grade(grade):
+    match = v_grade.match(grade)
+    if match:
+        return match.group(1)
+    return None
 
 def contains_grade(grade):
-    lower_case_grade = grade.lower().replace('f', '')
-    upper_case_grade = grade.upper()
-    return lower_case_grade in yos or \
-           upper_case_grade in v or \
-           lower_case_grade in french or \
-           upper_case_grade in font
+    return get_yos_grade(grade) or\
+           get_french_grade(grade)  or\
+           get_font_grade(grade)  or\
+           get_v_grade(grade)
 
-def convert(grade):
-    lower_case_grade = grade.lower().replace('f', '')
-    upper_case_grade = grade.upper()
-
-    input_grade = grade
+def convert(grade_text):
     conv_grade = None
     v_grade = None
 
-    if lower_case_grade in yos:
-        conv_grade = "F" + yos[lower_case_grade]
+    ygrade = get_yos_grade(grade_text)
+    ygrade = get_french_grade(grade_text)
+    ygrade = get_font_grade(grade_text)
+    ygrade = get_v_grade(grade_text)
+    if ygrade:
+        conv_grade = "F" + yos[ygrade]
         #Clean up the input - yosemite grade should always be lower case
-        input_grade = lower_case_grade
+        input_grade = ygrade.lower()
     elif upper_case_grade in v:
         conv_grade = "font " + v[upper_case_grade]
     else:
