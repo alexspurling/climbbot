@@ -8,8 +8,12 @@ class ClimbBot(bot.SimpleBot):
 
     def on_channel_message(self, event):
         msg = str(event.message)
-        if msg.startswith("~") or msg.startswith("!") or msg.startswith(self.nickname):
+        if msg.startswith("~") or msg.startswith("!"):
             msg_text = msg[1:].strip()
+        elif msg.startswith(self.nickname):
+            msg_text = msg[len(self.nickname):].strip()
+
+        if msg_text:
             try:
                 if gradeconvert.contains_grade(msg_text):
                     self.send_message(event.target, gradeconvert.convert(msg_text))
@@ -17,6 +21,7 @@ class ClimbBot(bot.SimpleBot):
                     self.send_message(event.target, "I don't understand: " + msg_text)
             except StandardError as e:
                 print "Error processing message: " + msg_text, e
+                self.send_message(event.target, "I don't understand: " + msg_text)
 
 
 if __name__ == "__main__":
