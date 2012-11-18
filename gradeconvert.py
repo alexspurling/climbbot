@@ -176,12 +176,14 @@ def convert_all_grades(all_grades):
         if frenchgrade:
             grade_tuple += frenchgrade,
         if fontgrade:
-            grade_tuple += fontgrade,
+            grade_tuple += "font " + fontgrade,
         if vgrade:
             grade_tuple += vgrade,
 
-        converted_grades.append(grade_tuple)
+        if grade_tuple:
+            converted_grades.append(grade_tuple)
 
+    print "Conv grades: " + str(converted_grades)
     return converted_grades
 
 
@@ -191,8 +193,12 @@ def convert(grade_text):
     print "Filtered out grades: " + str(all_grades)
     converted_grades = convert_all_grades(all_grades)
 
+    conversion_string = ""
     for i, grade_tuple in enumerate(converted_grades):
-        for grade in grade_tuple:
-            print all_grades[i] + " is " + grade
+        if len(conversion_string) > 0:
+            conversion_string += ", "
+        conversion_string += all_grades[i] + " is " + grade_tuple[0]
+        for grade in grade_tuple[1:]:
+            conversion_string += " or " + grade
 
-    return converted_grades
+    return conversion_string
