@@ -1,6 +1,6 @@
 import re
 
-yos={
+yos_map={
     '5.1':'1',
     '5.2':'2',
     '5.3':'3',
@@ -42,7 +42,7 @@ yos={
     '5.15d':'9c'
 }
 
-french={
+french_map={
     '1':'5.1',
     '2':'5.2',
     '3':'5.3',
@@ -81,7 +81,7 @@ french={
     '9c':'5.15d'
 }
 
-v={
+v_map={
     'V0':'4',
     'V0+':'4+',
     'V1':'5',
@@ -106,7 +106,7 @@ v={
     'V16':'8C+'
 }
 
-font={
+font_map={
     '4':'V0',
     '4+':'V0+',
     '5':'V1',
@@ -131,54 +131,74 @@ font={
     '8C+':'V16'
 }
 
-yos_grade = re.compile('5\.[1-9]([0-5][abcd]?)?$')
-french_grade = re.compile('([1-3]|[4-5][abcABC]?[+]?|[6-9]([abcABC][+]?)?)$')
-font_grade = re.compile('([4-5][abcABC]?[+]?|[6-8]([abcABC][+]?)?)$')
-v_grade = re.compile('[vV][bB0-9][0-9]?[+]?$')
 
-def contains_yos_grade(grade):
-    return bool(yos_grade.match(grade))
+yos_grade_pattern = '5\.[1-9]([0-5][abcd]?)?'
+french_grade_pattern = 'F?([1-3]|[4-5][abcABC]?[+]?|[6-9]([abcABC][+]?)?)'
+font_grade_pattern = '(font )?([4-5][abcABC]?[+]?|[6-8]([abcABC][+]?)?)'
+v_grade_pattern = '[vV][0-9][0-9]?[+]?'
+all_grades_pattern = '((' + yos_grade_pattern + \
+                     ')|(' + french_grade_pattern + \
+                     ')|(' + font_grade_pattern + \
+                     ')|(' + v_grade_pattern + '))'
 
-def contains_french_grade(grade):
-    return bool(french_grade.match(grade))
-
-def contains_font_grade(grade):
-    return bool(font_grade.match(grade))
-
-def contains_v_grade(grade):
-    return bool(v_grade.match(grade))
+yos_grade_regex = re.compile(yos_grade_pattern)
+french_grade_regex = re.compile(french_grade_pattern)
+font_grade_regex = re.compile(font_grade_pattern)
+v_grade_regex = re.compile(v_grade_pattern)
+all_grades_regex = re.compile(all_grades_pattern)
 
 def contains_grade(grade):
-    lower_case_grade = grade.lower().replace('f', '')
-    upper_case_grade = grade.upper()
-    return lower_case_grade in yos or \
-           upper_case_grade in v or \
-           lower_case_grade in french or \
-           upper_case_grade in font
+    return all_grades_regex.search(grade)
 
-def convert(grade):
-    lower_case_grade = grade.lower().replace('f', '')
-    upper_case_grade = grade.upper()
+def get_all_grades(grade_text):
+    return [x[0] for x in all_grades_regex.findall(grade_text)]
 
-    input_grade = grade
-    conv_grade = None
-    v_grade = None
+def convert_grade(grade, grade_map):
+    if grade.lower() in grade_map:
+        return grade_map[grade.lower()]
+    elif grade.upper() in grade_map:
+        return grade_map[grade.upper()]
+    return None
 
-    if lower_case_grade in yos:
-        conv_grade = "F" + yos[lower_case_grade]
-        #Clean up the input - yosemite grade should always be lower case
-        input_grade = lower_case_grade
-    elif upper_case_grade in v:
-        conv_grade = "font " + v[upper_case_grade]
-    else:
-        if lower_case_grade in french:
-            conv_grade = french[lower_case_grade]
-        if upper_case_grade in font:
-            v_grade = font[upper_case_grade]
+def convert_all_grades(all_grades):
+    converted_grades = []
+    for grade in all_grades:
+        print "Got grade: " + str(grade)
+        #print "Got grade: " + str(grade)
+        grade_tuple = ()
+        ygrade = convert_grade(grade.replace('F', ''), french_map)
+        frenchgrade = convert_grade(grade, yos_map)
+        fontgrade = convert_grade(grade, v_map)
+        vgrade = convert_grade(grade.replace('font ', ''), font_map)
 
-    if conv_grade:
-        response = input_grade + " is " + conv_grade
-        if v_grade:
-            response += " or " + v_grade
-        return response
-    raise ValueError('Invalid grade: ' + grade)
+        if ygrade:
+            grade_tuple += ygrade,
+        if frenchgrade:
+            grade_tuple += frenchgrade,
+        if fontgrade:
+            grade_tuple += "font " + fontgrade,
+        if vgrade:
+            grade_tuple += vgrade,
+
+        if grade_tuple:
+            converted_grades.append(grade_tuple)
+
+    print "Conv grades: " + str(converted_grades)
+    return converted_grades
+
+
+def convert(grade_text):
+    print "Converting all grades in text: " + grade_text
+    all_grades = get_all_grades(grade_text)
+    print "Filtered out grades: " + str(all_grades)
+    converted_grades = convert_all_grades(all_grades)
+
+    conversion_string = ""
+    for i, grade_tuple in enumerate(converted_grades):
+        if len(conversion_string) > 0:
+            conversion_string += ", "
+        conversion_string += all_grades[i] + " is " + grade_tuple[0]
+        for grade in grade_tuple[1:]:
+            conversion_string += " or " + grade
+
+    return conversion_string
