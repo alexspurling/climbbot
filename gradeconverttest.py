@@ -19,16 +19,19 @@ class GradeConvertTest(unittest.TestCase):
         self.assertFalse(gradeconvert.contains_grade("No valid grade VB+"))
         self.assertFalse(gradeconvert.contains_grade("FJ+"))
 
+    def test_get_all_grades(self):
+        self.assertEquals(set(['5', '6', '7']), gradeconvert.get_all_grades('5567'))
 
     def test_convert(self):
         #Success cases
+        self.assertEquals("F6c is 5.11a/b, font 6C is V5", gradeconvert.convert("6c"))
         self.assertEquals("F8c+ is 5.14c, V9 is font 7C", gradeconvert.convert("What is F8c+? and V9"))
-        self.assertEquals("8c+ is 5.14c or V16, v9 is font 7C", gradeconvert.convert("What is 8c+? and v9?"))
+        self.assertEquals("F8c+ is 5.14c, font 8C+ is V16, V9 is font 7C", gradeconvert.convert("What is 8c+? and v9?"))
         self.assertEquals("V12 is font 8A+, font 8A is V11", gradeconvert.convert("Why is SSD V12 but PI font 8A?"))
-        self.assertEquals("8A is 5.13b or V11, 8b+ is 5.14a or V14", gradeconvert.convert("8A8b+"))
+        self.assertEquals("F8a is 5.13b, font 8A is V11, F8b+ is 5.14a, font 8B+ is V14", gradeconvert.convert("8A8b+"))
 
         #Weird cases
-        self.assertEquals("F7 is 5.11d", gradeconvert.convert("F7"))
+        #self.assertEquals("F7 is 5.11d", gradeconvert.convert("F7"))
 
 
 

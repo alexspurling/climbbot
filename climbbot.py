@@ -21,15 +21,20 @@ class ClimbBot(bot.SimpleBot):
         if msg_text:
             self.handle_message(msg_text, event.target)
 
-    def handle_message(self, msg_text, message_reply):
+    def handle_message(self, msg_text, reply_target):
         try:
+            print "Received: " + msg_text
             if gradeconvert.contains_grade(msg_text):
-                self.send_message(message_reply, gradeconvert.convert(msg_text))
+                self.reply(reply_target, gradeconvert.convert(msg_text))
             else:
-                self.send_message(message_reply, "I don't understand: " + msg_text)
+                self.reply(reply_target, "I don't understand: " + msg_text)
         except StandardError as e:
             print "Error processing message: " + msg_text, e
-            self.send_message(message_reply, "I don't understand: " + msg_text)
+            self.reply(reply_target, "I don't understand: " + msg_text)
+
+    def reply(self, reply_target, reply):
+        print "Reply: " + reply
+        self.send_message(reply_target, reply)
 
     def __init__(self, nickname):
         super(ClimbBot, self).__init__(nickname)

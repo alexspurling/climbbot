@@ -151,7 +151,7 @@ def contains_grade(grade):
     return all_grades_regex.search(grade)
 
 def get_all_grades(grade_text):
-    return [x[0] for x in all_grades_regex.findall(grade_text)]
+    return set([x[0] for x in all_grades_regex.findall(grade_text)])
 
 def convert_grade(grade, grade_map):
     if grade.lower() in grade_map:
@@ -163,42 +163,35 @@ def convert_grade(grade, grade_map):
 def convert_all_grades(all_grades):
     converted_grades = []
     for grade in all_grades:
-        print "Got grade: " + str(grade)
-        #print "Got grade: " + str(grade)
-        grade_tuple = ()
-        ygrade = convert_grade(grade.replace('F', ''), french_map)
+
+        clean_french_grade = grade.replace('F', '').lower()
+        clean_font_grade = grade.replace('font ', '').upper()
+
+        ygrade = convert_grade(clean_french_grade, french_map)
         frenchgrade = convert_grade(grade, yos_map)
         fontgrade = convert_grade(grade, v_map)
-        vgrade = convert_grade(grade.replace('font ', ''), font_map)
+        vgrade = convert_grade(clean_font_grade, font_map)
 
         if ygrade:
-            grade_tuple += ygrade,
+            input_french_grade = 'F' + clean_french_grade
+            converted_grades.append((input_french_grade, ygrade))
         if frenchgrade:
-            grade_tuple += frenchgrade,
+            converted_grades.append((grade, "F" + frenchgrade))
         if fontgrade:
-            grade_tuple += "font " + fontgrade,
+            input_v_grade = grade.upper()
+            converted_grades.append((input_v_grade, "font " + fontgrade))
         if vgrade:
-            grade_tuple += vgrade,
+            input_font_grade = 'font ' + clean_font_grade
+            converted_grades.append((input_font_grade, vgrade))
 
-        if grade_tuple:
-            converted_grades.append(grade_tuple)
 
-    print "Conv grades: " + str(converted_grades)
     return converted_grades
 
 
 def convert(grade_text):
-    print "Converting all grades in text: " + grade_text
     all_grades = get_all_grades(grade_text)
-    print "Filtered out grades: " + str(all_grades)
     converted_grades = convert_all_grades(all_grades)
 
-    conversion_string = ""
-    for i, grade_tuple in enumerate(converted_grades):
-        if len(conversion_string) > 0:
-            conversion_string += ", "
-        conversion_string += all_grades[i] + " is " + grade_tuple[0]
-        for grade in grade_tuple[1:]:
-            conversion_string += " or " + grade
+    conversion_string = ", ".join([input_grade + " is " + converted_grade for (input_grade, converted_grade) in converted_grades])
 
     return conversion_string
