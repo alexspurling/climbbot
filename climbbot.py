@@ -5,11 +5,12 @@ from ircutils import bot
 class ClimbBot(bot.SimpleBot):
 
     def on_private_message(self, event):
-        self.send_message(event.target, "Just received this private message: " + event.message)
+        print "Just received private message from " + event.source + " with message " + event.message
+        self.handle_message(event.message, event.source)
 
     def on_channel_message(self, event):
         msg = str(event.message)
-	msg_text = None
+        msg_text = None
         if msg.startswith("~") or msg.startswith("!"):
             msg_text = msg[1:].strip()
         else:
@@ -18,14 +19,17 @@ class ClimbBot(bot.SimpleBot):
                 msg_text = nickname_match.group(1) 
 
         if msg_text:
-            try:
-                if gradeconvert.contains_grade(msg_text):
-                    self.send_message(event.target, gradeconvert.convert(msg_text))
-                else:
-                    self.send_message(event.target, "I don't understand: " + msg_text)
-            except StandardError as e:
-                print "Error processing message: " + msg_text, e
-                self.send_message(event.target, "I don't understand: " + msg_text)
+            self.handle_message(msg_text, event.target)
+
+    def handle_message(self, msg_text, message_reply):
+        try:
+            if gradeconvert.contains_grade(msg_text):
+                self.send_message(message_reply, gradeconvert.convert(msg_text))
+            else:
+                self.send_message(message_reply, "I don't understand: " + msg_text)
+        except StandardError as e:
+            print "Error processing message: " + msg_text, e
+            self.send_message(message_reply, "I don't understand: " + msg_text)
 
     def __init__(self, nickname):
         super(ClimbBot, self).__init__(nickname)
