@@ -1,4 +1,5 @@
 import gradeconvert
+import re
 from ircutils import bot
 
 class ClimbBot(bot.SimpleBot):
@@ -11,8 +12,10 @@ class ClimbBot(bot.SimpleBot):
 	msg_text = None
         if msg.startswith("~") or msg.startswith("!"):
             msg_text = msg[1:].strip()
-        elif msg.startswith(self.nickname):
-            msg_text = msg[len(self.nickname):].strip()
+        else:
+            nickname_match = self.nickname_regex.match(msg)
+            if nickname_match:
+                msg_text = nickname_match.group(1) 
 
         if msg_text:
             try:
@@ -23,6 +26,10 @@ class ClimbBot(bot.SimpleBot):
             except StandardError as e:
                 print "Error processing message: " + msg_text, e
                 self.send_message(event.target, "I don't understand: " + msg_text)
+
+    def __init__(self, nickname):
+        super(ClimbBot, self).__init__(nickname)
+        self.nickname_regex = re.compile(nickname + '[^0-9a-zA-Z]*(.*)')
 
 
 if __name__ == "__main__":
