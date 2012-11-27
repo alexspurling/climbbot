@@ -11,7 +11,7 @@ class ClimbBot(bot.SimpleBot):
     def on_channel_message(self, event):
         msg = str(event.message)
         msg_text = None
-        if msg.startswith("~") or msg.startswith("!"):
+        if msg.startswith("~"):
             msg_text = msg[1:].strip()
         else:
             nickname_match = self.nickname_regex.match(msg)
