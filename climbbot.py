@@ -1,4 +1,5 @@
 import gradeconvert
+import os
 import re
 from ircutils import bot
 
@@ -47,8 +48,10 @@ if __name__ == "__main__":
     climbbot = ClimbBot("climbbot")
     climbbot.real_name = "climbbot"
 
+    password = os.environ['climbbotpassword']
+
     # Let's connect to the host
-    climbbot.connect("irc.snoonet.org", channel="#climbing")
+    climbbot.connect("irc.snoonet.org", channel="#climbing", password=password)
 
     # Start running the bot
     climbbot.start()
