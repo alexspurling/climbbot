@@ -49,6 +49,7 @@ if __name__ == "__main__":
     climbbot.real_name = "climbbot"
 
     password = os.environ['climbbotpassword']
+    print "Trying to use the password: " + password
 
     # Let's connect to the host
     climbbot.connect("irc.snoonet.org", channel="#climbing", password=password)
