@@ -1,1 +1,1 @@
-ircutils==0.1.3
+ircutils==0.1.4
